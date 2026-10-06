@@ -1,129 +1,32 @@
 rules_version = '2';
 
-// ===============================================================
-// Assumed Data Model
-// ===============================================================
-//
-// Collection: /foods/{foodId}
-// Document ID: foodId (string)
-// Fields:
-//   - name: string (required, 1..200 chars) - Name of the food item
-//   - category: string (optional, 0..100 chars) - Food group / category
-//   - source: string (optional, 0..50 chars) - Source database (TACO, IBGE, USDA, etc.)
-//   - calories: number (optional) - Energy content (kcal)
-//   - protein: number (optional) - Protein content (g)
-//   - carbs: number (optional) - Carbohydrate content (g)
-//   - fat: number (optional) - Lipid content (g)
-//   - searchTokens: list (optional, max 50 items) - Search indexing tokens
-//
-// Collection: /clinics/{clinicId}
-// Document ID: clinicId (string)
-// Fields:
-//   - name: string (required, 1..150 chars) - Clinic name
-//   - address: string (optional, 0..300 chars) - Address
-//   - phone: string (optional, 0..50 chars) - Contact phone number
-//   - createdAt: timestamp (optional) - Creation timestamp
-//
-// Subcollection: /clinics/{clinicId}/users/{userId}
-// Document ID: userId (matches auth.uid)
-// Fields:
-//   - name: string (required, 1..150 chars) - Staff user's name
-//   - email: string (required, valid email format) - Email address
-//   - role: string (required, 'nutri' | 'secretaria' | 'admin') - User role
-//   - clinicId: string (required, must equal clinicId) - Associated clinic ID
-//
-// Subcollection: /clinics/{clinicId}/patients/{patientId}
-// Document ID: patientId (matches patient auth.uid or patientId)
-// Fields:
-//   - name: string (required, 1..150 chars) - Patient full name
-//   - email: string (optional, valid email format) - Patient email
-//   - phone: string (optional, 0..50 chars) - Contact phone
-//   - clinicId: string (required, must equal clinicId) - Associated clinic ID
-//   - birthDate: string (optional, YYYY-MM-DD) - Date of birth
-//   - status: string (optional, 0..50 chars) - Patient status ('active', etc.)
-//
-// Subcollection: /clinics/{clinicId}/patients/{patientId}/anamneses/{anamneseId}
-// Document ID: anamneseId
-// Fields:
-//   - medicalHistory: string (optional, max 5000 chars)
-//   - dietaryHabits: string (optional, max 5000 chars)
-//   - recall24h: string or map (optional)
-//   - updatedAt: timestamp (optional)
-//
-// Subcollection: /clinics/{clinicId}/patients/{patientId}/evaluations/{evalId}
-// Document ID: evalId
-// Fields:
-//   - date: timestamp or string (optional)
-//   - weight: number (optional)
-//   - height: number (optional)
-//   - bodyFatPercentage: number (optional)
-//   - notes: string (optional, max 2000 chars)
-//
-// Subcollection: /clinics/{clinicId}/patients/{patientId}/dietPlans/{dietPlanId}
-// Document ID: dietPlanId
-// Fields:
-//   - title: string (required, 1..200 chars)
-//   - active: bool (optional)
-//   - meals: list or map (optional)
-//   - createdAt: timestamp (optional)
-//
-// Subcollection: /clinics/{clinicId}/patients/{patientId}/labResults/{labId}
-// Document ID: labId
-// Fields:
-//   - examDate: timestamp or string (optional)
-//   - indicators: map or list (optional)
-//   - pdfUrl: string (optional, valid URL <= 2000 chars)
-//   - notes: string (optional, max 2000 chars)
-//
-// Subcollection: /clinics/{clinicId}/patients/{patientId}/foodDiary/{diaryEntryId}
-// Document ID: diaryEntryId
-// Fields:
-//   - date: string or timestamp (required)
-//   - mealType: string (optional, 0..100 chars) - Breakfast, Lunch, etc.
-//   - photoUrl: string (optional, valid URL <= 2000 chars) - Meal photo
-//   - notes: string (optional, max 1000 chars) - Patient notes
-//   - satiety: number or string (optional) - Satiety level
-//   - difficulty: number or string (optional) - Adherence difficulty
-//
-// ===============================================================
-
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ===============================================================
     // Default Deny All Rules
-    // ===============================================================
     match /{document=**} {
       allow read, write: if false;
     }
 
-    // ===============================================================
-    // Core Helper Functions
-    // ===============================================================
-
-    // Check if the request is from an authenticated user
+    // Helper Functions
     function isSignedIn() {
       return request.auth != null;
     }
 
-    // Extract clinicId from Firebase Auth Custom Claims
     function getUserClinicId() {
       return isSignedIn() && 'clinicId' in request.auth.token ? request.auth.token.clinicId : null;
     }
 
-    // Extract role from Firebase Auth Custom Claims ('admin', 'nutri', 'secretaria', 'paciente')
     function getUserRole() {
       return isSignedIn() && 'role' in request.auth.token ? request.auth.token.role : null;
     }
 
-    // Check if user is clinic staff (nutri or secretaria) for the specified clinic
     function isClinicStaff(clinicId) {
       return isSignedIn() &&
              getUserClinicId() == clinicId &&
              (getUserRole() == 'nutri' || getUserRole() == 'secretaria');
     }
 
-    // Check if user is the patient for the specified clinic and patientId
     function isPatient(clinicId, patientId) {
       return isSignedIn() &&
              getUserClinicId() == clinicId &&
@@ -133,59 +36,43 @@ service cloud.firestore {
              );
     }
 
-    // Validate string length bounds
     function validStringLength(val, minLen, maxLen) {
       return val is string && val.size() >= minLen && val.size() <= maxLen;
     }
 
-    // Validate optional string field
     function isValidOptionalString(data, field, minLen, maxLen) {
       return !(field in data) || (data[field] is string && data[field].size() >= minLen && data[field].size() <= maxLen);
     }
 
-    // Validate URL string format
     function isValidUrl(url) {
       return url is string && url.size() <= 2000 && (url.matches("^https://.*") || url.matches("^http://.*"));
     }
 
-    // Validate email format
     function isValidEmail(email) {
       return email is string && email.size() <= 254 && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
     }
 
-    // Validate list type and size bound
     function isValidList(listVal, maxSize) {
       return listVal is list && listVal.size() <= maxSize;
     }
 
-    // Verify immutable fields are not changed during update
     function areImmutableFieldsUnchanged(fields) {
       return !request.resource.data.diff(resource.data).affectedKeys().hasAny(fields);
     }
 
-    // Validate that document contains only permitted field keys
-    function hasOnlyAllowedFields(allowedFields) {
-      return request.resource.data.keys().hasOnly(allowedFields);
-    }
-
-    // ===============================================================
     // Domain Validators
-    // ===============================================================
-
-    // Domain validator for Global Foods collection items
     function isValidFood(data) {
-      return data.keys().hasAll(['name']) &&
-             validStringLength(data.name, 1, 200) &&
+      return data.keys().hasAll(['description', 'category']) &&
+             validStringLength(data.description, 1, 200) &&
              isValidOptionalString(data, 'category', 0, 100) &&
              isValidOptionalString(data, 'source', 0, 50) &&
-             (!('calories' in data) || data.calories is number) &&
-             (!('protein' in data) || data.protein is number) &&
-             (!('carbs' in data) || data.carbs is number) &&
-             (!('fat' in data) || data.fat is number) &&
-             (!('searchTokens' in data) || isValidList(data.searchTokens, 50));
+             (!('energy_kcal' in data) || data.energy_kcal is number) &&
+             (!('protein_g' in data) || data.protein_g is number) &&
+             (!('carbohydrate_g' in data) || data.carbohydrate_g is number) &&
+             (!('lipid_g' in data) || data.lipid_g is number) &&
+             (!('searchTokens' in data) || isValidList(data.searchTokens, 100));
     }
 
-    // Domain validator for Clinic documents
     function isValidClinic(data) {
       return data.keys().hasAll(['name']) &&
              validStringLength(data.name, 1, 150) &&
@@ -194,7 +81,6 @@ service cloud.firestore {
              (!('createdAt' in data) || data.createdAt is timestamp);
     }
 
-    // Domain validator for Clinic Users subcollection documents
     function isValidUser(data, clinicId) {
       return data.keys().hasAll(['name', 'email', 'role', 'clinicId']) &&
              validStringLength(data.name, 1, 150) &&
@@ -203,7 +89,6 @@ service cloud.firestore {
              data.clinicId == clinicId;
     }
 
-    // Domain validator for Patients subcollection documents
     function isValidPatient(data, clinicId) {
       return data.keys().hasAll(['name', 'clinicId']) &&
              validStringLength(data.name, 1, 150) &&
@@ -214,7 +99,6 @@ service cloud.firestore {
              data.clinicId == clinicId;
     }
 
-    // Domain validator for Food Diary entries
     function isValidFoodDiaryEntry(data) {
       return ('date' in data) &&
              isValidOptionalString(data, 'mealType', 0, 100) &&
@@ -222,85 +106,36 @@ service cloud.firestore {
              (!('photoUrl' in data) || data.photoUrl == null || isValidUrl(data.photoUrl));
     }
 
-
-    // ===============================================================
-    // Collection Rules
-    // ===============================================================
-
-    // ---------------------------------------------------------------
     // 1. Global Foods Collection (/foods/{foodId})
-    // ---------------------------------------------------------------
     match /foods/{foodId} {
-      // Allow read for any authenticated user
       allow read: if isSignedIn();
-
-      // Restrict write to users with custom claim role == 'admin' or 'nutri'
-      allow create: if isSignedIn() &&
-                       (getUserRole() == 'admin' || getUserRole() == 'nutri') &&
-                       isValidFood(request.resource.data);
-
-      allow update: if isSignedIn() &&
-                       (getUserRole() == 'admin' || getUserRole() == 'nutri') &&
-                       isValidFood(request.resource.data);
-
-      allow delete: if isSignedIn() &&
-                       (getUserRole() == 'admin' || getUserRole() == 'nutri');
+      allow create: if isSignedIn() && (getUserRole() == 'admin' || getUserRole() == 'nutri') && isValidFood(request.resource.data);
+      allow update: if isSignedIn() && (getUserRole() == 'admin' || getUserRole() == 'nutri') && isValidFood(request.resource.data);
+      allow delete: if isSignedIn() && (getUserRole() == 'admin' || getUserRole() == 'nutri');
     }
 
-    // ---------------------------------------------------------------
     // 2. Clinics Collection (/clinics/{clinicId})
-    // ---------------------------------------------------------------
     match /clinics/{clinicId} {
-      // Staff or users belonging to the clinic can read the clinic record
       allow read: if isSignedIn() && getUserClinicId() == clinicId;
-
-      // Staff of the clinic can create and update clinic metadata
       allow create: if isClinicStaff(clinicId) && isValidClinic(request.resource.data);
       allow update: if isClinicStaff(clinicId) && isValidClinic(request.resource.data);
       allow delete: if isClinicStaff(clinicId);
 
-      // -------------------------------------------------------------
-      // Subcollection: /clinics/{clinicId}/users/{userId}
-      // -------------------------------------------------------------
+      // Subcollection: /users/{userId}
       match /users/{userId} {
-        // Staff of clinicId can read, or user can read their own record if in same clinic
-        allow read: if isClinicStaff(clinicId) ||
-                       (isSignedIn() && request.auth.uid == userId && getUserClinicId() == clinicId);
-
-        // Staff can create/update/delete users in their clinic.
-        // User can update their own user record if in same clinic.
-        allow create: if (isClinicStaff(clinicId) ||
-                         (isSignedIn() && request.auth.uid == userId && getUserClinicId() == clinicId)) &&
-                         isValidUser(request.resource.data, clinicId);
-
-        allow update: if (isClinicStaff(clinicId) ||
-                         (isSignedIn() && request.auth.uid == userId && getUserClinicId() == clinicId)) &&
-                         isValidUser(request.resource.data, clinicId) &&
-                         areImmutableFieldsUnchanged(['clinicId']);
-
+        allow read: if isClinicStaff(clinicId) || (isSignedIn() && request.auth.uid == userId && getUserClinicId() == clinicId);
+        allow create: if (isClinicStaff(clinicId) || (isSignedIn() && request.auth.uid == userId && getUserClinicId() == clinicId)) && isValidUser(request.resource.data, clinicId);
+        allow update: if (isClinicStaff(clinicId) || (isSignedIn() && request.auth.uid == userId && getUserClinicId() == clinicId)) && isValidUser(request.resource.data, clinicId) && areImmutableFieldsUnchanged(['clinicId']);
         allow delete: if isClinicStaff(clinicId);
       }
 
-      // -------------------------------------------------------------
-      // Subcollection: /clinics/{clinicId}/patients/{patientId}
-      // -------------------------------------------------------------
+      // Subcollection: /patients/{patientId}
       match /patients/{patientId} {
-        // Staff can read all patients; Patient can read their own record
         allow read: if isClinicStaff(clinicId) || isPatient(clinicId, patientId);
-
-        // Staff of clinicId (nutri, secretaria) can create, update, delete
         allow create: if isClinicStaff(clinicId) && isValidPatient(request.resource.data, clinicId);
-
-        allow update: if isClinicStaff(clinicId) &&
-                         isValidPatient(request.resource.data, clinicId) &&
-                         areImmutableFieldsUnchanged(['clinicId']);
-
+        allow update: if isClinicStaff(clinicId) && isValidPatient(request.resource.data, clinicId) && areImmutableFieldsUnchanged(['clinicId']);
         allow delete: if isClinicStaff(clinicId);
 
-        // -----------------------------------------------------------
-        // Subcollections under /patients/{patientId}:
-        // /anamneses, /evaluations, /dietPlans, /labResults
-        // -----------------------------------------------------------
         match /anamneses/{anamneseId} {
           allow read: if isClinicStaff(clinicId) || isPatient(clinicId, patientId);
           allow write: if isClinicStaff(clinicId);
@@ -321,19 +156,10 @@ service cloud.firestore {
           allow write: if isClinicStaff(clinicId);
         }
 
-        // -----------------------------------------------------------
-        // Subcollection: /foodDiary/{diaryEntryId}
-        // -----------------------------------------------------------
         match /foodDiary/{diaryEntryId} {
-          // Staff can read/write. Patient can read and create/update entries in their own foodDiary
           allow read: if isClinicStaff(clinicId) || isPatient(clinicId, patientId);
-
-          allow create: if (isClinicStaff(clinicId) || isPatient(clinicId, patientId)) &&
-                           isValidFoodDiaryEntry(request.resource.data);
-
-          allow update: if (isClinicStaff(clinicId) || isPatient(clinicId, patientId)) &&
-                           isValidFoodDiaryEntry(request.resource.data);
-
+          allow create: if (isClinicStaff(clinicId) || isPatient(clinicId, patientId)) && isValidFoodDiaryEntry(request.resource.data);
+          allow update: if (isClinicStaff(clinicId) || isPatient(clinicId, patientId)) && isValidFoodDiaryEntry(request.resource.data);
           allow delete: if isClinicStaff(clinicId);
         }
       }
