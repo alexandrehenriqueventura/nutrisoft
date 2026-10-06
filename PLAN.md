@@ -36,16 +36,16 @@
 - [x] **Task 1.4**: Criar script de seed (`scripts/seed-taco.ts`) para carregar a base de dados TACO 4ª edição para a coleção global `/foods` no Firestore, gerando tokens minúsculos (`searchTokens: string[]`) para consulta.
 
 ### ETAPA 2: Motor de Cálculos Nutricionais & Antropométricos
-- [ ] **Task 2.1**: Implementar motor matemático puro de Taxa Metabólica Basal (TMB):
+- [x] **Task 2.1**: Implementar motor matemático puro de Taxa Metabólica Basal (TMB):
   - Harris-Benedict (1919 e 1984)
   - Mifflin-St Jeor
   - Cunningham
   - Fórmulas FAO/OMS
-- [ ] **Task 2.2**: Implementar motor de cálculo de Gasto Energético Total (GET) com fatores de atividade física e fator injúria.
-- [ ] **Task 2.3**: Implementar fórmulas de percentual de gordura corporal:
+- [x] **Task 2.2**: Implementar motor de cálculo de Gasto Energético Total (GET) com fatores de atividade física e fator injúria.
+- [x] **Task 2.3**: Implementar fórmulas de percentual de gordura corporal:
   - Pollock 3 dobras e Pollock 7 dobras
-  - Jackson-Pollock
-- [ ] **Task 2.4**: Criar testes unitários (Vitest/Jest) cobrindo todos os cálculos com amostras de referência.
+  - Jackson-Pollock (Siri e Brozek)
+- [x] **Task 2.4**: Criar testes unitários (Vitest) cobrindo todos os cálculos com amostras de referência.
 
 ### ETAPA 3: Backoffice Clínico (Dashboard do Nutricionista)
 - [ ] **Task 3.1**: Implementar tela de autenticação e controle de sessão por função (nutri, secretaria).
