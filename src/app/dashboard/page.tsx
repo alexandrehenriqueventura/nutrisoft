@@ -26,9 +26,14 @@ export default function DashboardPage() {
         {/* Welcome Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
-              Painel Clínico
-            </h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+                Painel Clínico
+              </h1>
+              <span className="inline-flex items-center rounded-md bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300 border border-emerald-200">
+                🚀 CI/CD Ativo via GitHub Actions
+              </span>
+            </div>
             <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
               Bem-vindo(a), <span className="font-semibold text-emerald-600 dark:text-emerald-400">{user?.name}</span>. Acompanhe seus atendimentos do dia.
             </p>
