@@ -6,7 +6,7 @@
 - **Banco de Dados:** Google Cloud Firestore (NoSQL, offline cache, real-time listeners).
 - **Autenticação:** Firebase Authentication com Custom Claims (`role`: `nutri` | `secretaria` | `paciente`, `clinicId`).
 - **Storage:** Cloud Storage for Firebase (Laudos médicos em PDF, fotos de pratos e antropometria).
-- **IA & OCR:** Google Cloud Vertex AI / Gemini API.
+- **IA & OCR:** Google Cloud Vertex AI / Gemini API (`@google/genai`).
 - **App do Paciente:** PWA (Next.js responsivo com Service Workers / Web Push).
 
 ---
@@ -62,24 +62,24 @@
 - [x] **Task 3.5**: Módulo de Importação Externa - Criar parser para importação de planilhas CSV/Excel vindas de softwares legados (FineShape, WebDiet, Dietbox) para popular o histórico antropométrico do paciente.
 
 ### ETAPA 4: Recursos Inteligentes com Google Gemini (IA)
-- [ ] **Task 4.1**: Criar Cloud Function / Server Action para processamento de exames laboratoriais:
+- [x] **Task 4.1**: Criar Cloud Function / Server Action para processamento de exames laboratoriais:
   - Upload de PDF de hemograma e bioquímica para o Firebase Storage.
   - Envio do arquivo para a API do Gemini com schema JSON estruturado (Glicose, HbA1c, Colesterol Total, HDL, LDL, Triglicérides, TSH, etc.).
   - Salvamento dos valores extraídos diretamente em `/patients/{id}/labResults`.
-- [ ] **Task 4.2**: Assistente de sugestão: criar prompt estruturado para sugerir substituições de alimentos respeitando o balanço calórico/macro da refeição.
+- [x] **Task 4.2**: Assistente de sugestão: criar prompt estruturado para sugerir substituições de alimentos respeitando o balanço calórico/macro da refeição.
 
 ### ETAPA 5: Portal / PWA do Paciente & Notificações
-- [ ] **Task 5.1**: Criar layout mobile-first para a visão do paciente (login simplificado via link mágico ou senha).
-- [ ] **Task 5.2**: Visualização em tempo real do plano alimentar ativo com suporte a leitura offline (`enableIndexedDbPersistence`).
-- [ ] **Task 5.3**: Módulo de Diário Alimentar: paciente envia fotos das refeições e relata saciedade/dificuldade.
-- [ ] **Task 5.4**: Geração automática da lista de compras da semana a partir do plano alimentar.
-- [ ] **Task 5.5**: Configurar Firebase Cloud Messaging (FCM) para disparos de lembretes de hidratação e horários de refeição.
+- [x] **Task 5.1**: Criar layout mobile-first para a visão do paciente (login simplificado via link mágico ou senha).
+- [x] **Task 5.2**: Visualização em tempo real do plano alimentar ativo com suporte a leitura offline (`enableIndexedDbPersistence`).
+- [x] **Task 5.3**: Módulo de Diário Alimentar: paciente envia fotos das refeições e relata saciedade/dificuldade.
+- [x] **Task 5.4**: Geração automática da lista de compras da semana a partir do plano alimentar.
+- [x] **Task 5.5**: Configurar Firebase Cloud Messaging (FCM) para disparos de lembretes de hidratação e horários de refeição.
 
 ---
 
 ## 🚦 CRITÉRIOS DE ACEITE DO MVP
-1. Nutricionista consegue cadastrar um paciente, registrar medidas e obter o % de gordura calculado automaticamente.
-2. É possível montar um plano alimentar completo com alimentos da base TACO com atualização de macronutrientes em tempo real.
-3. Importar histórico antropométrico vindo de planilhas CSV/Excel (FineShape, WebDiet, Dietbox).
-4. Paciente acessa seu painel via navegador mobile, visualiza a dieta sem conexão com a internet e registra fotos no diário alimentar.
-5. Regras do Firestore impedem rigorosamente que um paciente veja dados de outro paciente ou de outra clínica.
+1. Nutricionista consegue cadastrar um paciente, registrar medidas e obter o % de gordura calculado automaticamente. [CONCLUÍDO]
+2. É possível montar um plano alimentar completo com alimentos da base TACO com atualização de macronutrientes em tempo real. [CONCLUÍDO]
+3. Importar histórico antropométrico vindo de planilhas CSV/Excel (FineShape, WebDiet, Dietbox). [CONCLUÍDO]
+4. Paciente acessa seu painel via navegador mobile, visualiza a dieta sem conexão com a internet e registra fotos no diário alimentar. [CONCLUÍDO]
+5. Regras do Firestore impedem rigorosamente que um paciente veja dados de outro paciente ou de outra clínica. [CONCLUÍDO]
