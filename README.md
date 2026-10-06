@@ -57,20 +57,20 @@ npm install
 
 ### 3. Configurar Variáveis de Ambiente
 
-Crie um arquivo `.env.local` na raiz do projeto com as credenciais do seu projeto Firebase:
+Crie um arquivo `.env.local` na raiz do projeto com as credenciais do seu projeto Firebase (consulte `.env.local.example`):
 
 ```env
 # Firebase Client SDK
-NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyB4aAPV5KvNsXDzN-qSrJyYdCVmjRwd4D4
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=nutrisoft-df543.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=nutrisoft-df543
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=nutrisoft-df543.firebasestorage.app
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=648713053313
-NEXT_PUBLIC_FIREBASE_APP_ID=1:648713053313:web:81ef97f1d21e3b20b5d980
-NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-2G5GB5FHSG
+NEXT_PUBLIC_FIREBASE_API_KEY=sua_api_key_aqui
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=seu-projeto.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=seu-projeto-id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=seu-projeto.firebasestorage.app
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=123456789012
+NEXT_PUBLIC_FIREBASE_APP_ID=1:123456789012:web:abcdef123456
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-XXXXXXXXXX
 
 # Firebase Admin SDK (Opcional para scripts locais)
-FIREBASE_ADMIN_PROJECT_ID=nutrisoft-df543
+FIREBASE_ADMIN_PROJECT_ID=seu-projeto-id
 ```
 
 ### 4. Executar em modo de desenvolvimento
@@ -93,10 +93,10 @@ Acesse [http://localhost:3000](http://localhost:3000) no seu navegador.
 
 ## 🔥 Ativação do Cloud Firestore no Firebase Console
 
-Para ativar o banco de dados **Cloud Firestore** no seu projeto Firebase (`nutrisoft-df543`):
+Para ativar o banco de dados **Cloud Firestore** no seu projeto Firebase:
 
 1. Acesse o [Firebase Console](https://console.firebase.google.com/).
-2. Selecione o seu projeto **`nutrisoft-df543`**.
+2. Selecione o seu projeto.
 3. No menu lateral esquerdo, sob a seção **Criação**, clique em **Firestore Database**.
 4. Clique no botão **Criar banco de dados**.
 5. Escolha a localização do banco (ex: `southamerica-east1 (São Paulo)` ou `us-central`).
