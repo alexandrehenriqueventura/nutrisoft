@@ -11,7 +11,7 @@ import {
   calculateMifflinStJeor,
 } from "@/lib/calculations/bmr";
 import { calculateTdee } from "@/lib/calculations/tdee";
-import { TACO_DATABASE_SAMPLE, generateSearchTokens } from "../../../../scripts/seed-taco";
+import { TACO_DATABASE_SAMPLE } from "@/lib/tacoData";
 import {
   LineChart,
   Line,
