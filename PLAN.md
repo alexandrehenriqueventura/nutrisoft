@@ -48,18 +48,18 @@
 - [x] **Task 2.4**: Criar testes unitários (Vitest) cobrindo todos os cálculos com amostras de referência.
 
 ### ETAPA 3: Backoffice Clínico (Dashboard do Nutricionista)
-- [ ] **Task 3.1**: Implementar tela de autenticação e controle de sessão por função (nutri, secretaria).
-- [ ] **Task 3.2**: Desenvolver CRUD completo de Pacientes com busca rápida e ficha cadastral.
-- [ ] **Task 3.3**: Construir módulo de Avaliação Física:
+- [x] **Task 3.1**: Implementar tela de autenticação e controle de sessão por função (nutri, secretaria).
+- [x] **Task 3.2**: Desenvolver CRUD completo de Pacientes com busca rápida e ficha cadastral.
+- [x] **Task 3.3**: Construir módulo de Avaliação Física:
   - Formulário dinâmico de dobras cutâneas e circunferências.
   - Gráficos de evolução histórica (peso, % de gordura, massa magra) usando Recharts.
-- [ ] **Task 3.4**: Construir o Construtor Visual de Planos Alimentares:
+- [x] **Task 3.4**: Construir o Construtor Visual de Planos Alimentares:
   - Adição de refeições (Café da Manhã, Almoço, etc.).
   - Busca dinâmica de alimentos na coleção `/foods`.
   - Cálculo instantâneo do balanço de macros (Carboidratos, Proteínas, Lipídios, Fibras) e calorias da refeição e do dia.
   - Lista de substitutos equivalentes por porção.
   - Exportação e formatação do plano em PDF profissional.
-- [ ] **Task 3.5**: Módulo de Importação Externa - Criar parser para importação de planilhas CSV/Excel vindas de softwares legados (FineShape, WebDiet, Dietbox) para popular o histórico antropométrico do paciente.
+- [x] **Task 3.5**: Módulo de Importação Externa - Criar parser para importação de planilhas CSV/Excel vindas de softwares legados (FineShape, WebDiet, Dietbox) para popular o histórico antropométrico do paciente.
 
 ### ETAPA 4: Recursos Inteligentes com Google Gemini (IA)
 - [ ] **Task 4.1**: Criar Cloud Function / Server Action para processamento de exames laboratoriais:
