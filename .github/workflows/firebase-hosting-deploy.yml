@@ -29,13 +29,23 @@ jobs:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_NUTRISOFT_DF543 }}
         run: |
           if [ -z "$FIREBASE_SERVICE_ACCOUNT" ]; then
-            echo "::error::Secret FIREBASE_SERVICE_ACCOUNT_NUTRISOFT_DF543 não configurada no GitHub Secrets."
+            echo "::error::Secret FIREBASE_SERVICE_ACCOUNT_NUTRISOFT_DF543 vazia ou não encontrada no GitHub Secrets."
             exit 1
           fi
 
-          echo "$FIREBASE_SERVICE_ACCOUNT" > gcp_key.json
+          node -e "
+            const fs = require('fs');
+            const sa = process.env.FIREBASE_SERVICE_ACCOUNT;
+            try {
+              const parsed = JSON.parse(sa);
+              console.log('✅ Chave JSON validada para o projeto:', parsed.project_id);
+              fs.writeFileSync('gcp_key.json', JSON.stringify(parsed, null, 2));
+            } catch (err) {
+              console.error('❌ Erro no parse do JSON da Secret:', err.message);
+              process.exit(1);
+            }
+          "
+
           export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/gcp_key.json
-
           npx firebase-tools deploy --only hosting --project nutrisoft-df543 --non-interactive --debug
-
           rm -f gcp_key.json
