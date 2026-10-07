@@ -24,18 +24,9 @@ jobs:
       - name: Build Next.js Static Export
         run: npm run build
 
-      - name: Deploy Preview to Firebase Hosting
-        env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_NUTRISOFT_DF543 }}
-        run: |
-          if [ -z "$FIREBASE_SERVICE_ACCOUNT" ]; then
-            echo "::error::Secret FIREBASE_SERVICE_ACCOUNT_NUTRISOFT_DF543 não configurada no GitHub Secrets."
-            exit 1
-          fi
-
-          echo "$FIREBASE_SERVICE_ACCOUNT" > gcp_key.json
-          export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/gcp_key.json
-
-          npx firebase-tools hosting:channel:deploy pr-${{ github.event.number }} --project nutrisoft-df543 --non-interactive --debug
-
-          rm -f gcp_key.json
+      - name: Deploy Preview Channel to Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_NUTRISOFT_DF543 }}"
+          projectId: nutrisoft-df543

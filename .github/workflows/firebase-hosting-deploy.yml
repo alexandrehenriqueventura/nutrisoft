@@ -24,28 +24,10 @@ jobs:
       - name: Build Next.js Static Export
         run: npm run build
 
-      - name: Deploy to Firebase Hosting
-        env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_NUTRISOFT_DF543 }}
-        run: |
-          if [ -z "$FIREBASE_SERVICE_ACCOUNT" ]; then
-            echo "::error::Secret FIREBASE_SERVICE_ACCOUNT_NUTRISOFT_DF543 vazia ou não encontrada no GitHub Secrets."
-            exit 1
-          fi
-
-          node -e "
-            const fs = require('fs');
-            const sa = process.env.FIREBASE_SERVICE_ACCOUNT;
-            try {
-              const parsed = JSON.parse(sa);
-              console.log('✅ Chave JSON validada para o projeto:', parsed.project_id);
-              fs.writeFileSync('gcp_key.json', JSON.stringify(parsed, null, 2));
-            } catch (err) {
-              console.error('❌ Erro no parse do JSON da Secret:', err.message);
-              process.exit(1);
-            }
-          "
-
-          export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/gcp_key.json
-          npx firebase-tools deploy --only hosting --project nutrisoft-df543 --non-interactive --debug
-          rm -f gcp_key.json
+      - name: Deploy to Firebase Hosting Live Channel
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_NUTRISOFT_DF543 }}"
+          channelId: live
+          projectId: nutrisoft-df543
