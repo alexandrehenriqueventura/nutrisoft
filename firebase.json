@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "nutrisoft-df543",
     "public": "out",
     "ignore": [
       "firebase.json",
