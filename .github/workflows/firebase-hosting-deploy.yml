@@ -15,7 +15,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: "npm"
 
       - name: Install Dependencies
@@ -28,12 +28,14 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_NUTRISOFT_DF543 }}
         run: |
-          if [ -n "$FIREBASE_SERVICE_ACCOUNT" ]; then
-            echo "$FIREBASE_SERVICE_ACCOUNT" > gcp_key.json
-            export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/gcp_key.json
-            npx firebase-tools deploy --only hosting --project nutrisoft-df543 --non-interactive
-            rm -f gcp_key.json
-          else
-            echo "::error::Secret FIREBASE_SERVICE_ACCOUNT_NUTRISOFT_DF543 não encontrada nos secrets do repositório GitHub."
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "::error::Secret FIREBASE_SERVICE_ACCOUNT_NUTRISOFT_DF543 não configurada no GitHub Secrets."
             exit 1
           fi
+
+          echo "$FIREBASE_SERVICE_ACCOUNT" > gcp_key.json
+          export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/gcp_key.json
+
+          npx firebase-tools deploy --only hosting --project nutrisoft-df543 --non-interactive --debug
+
+          rm -f gcp_key.json
