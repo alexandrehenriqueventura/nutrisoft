@@ -31,7 +31,9 @@ import {
   BrainCircuit,
   Sparkles,
   FileText,
+  Stethoscope,
 } from "lucide-react";
+import { AnamnesisTab } from "@/components/patient/AnamnesisTab";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
 
@@ -55,7 +57,7 @@ interface Meal {
 }
 
 export function PatientDetailClient({ id }: { id: string }) {
-  const [activeTab, setActiveTab] = useState<"evaluation" | "dietBuilder" | "labResults" | "importLegacy">("evaluation");
+  const [activeTab, setActiveTab] = useState<"anamnesis" | "evaluation" | "dietBuilder" | "labResults" | "importLegacy">("anamnesis");
 
   const [aiExtracting, setAiExtracting] = useState(false);
   const [labData, setLabData] = useState<{
@@ -307,49 +309,62 @@ export function PatientDetailClient({ id }: { id: string }) {
           </div>
         </div>
 
-        <div className="flex gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-1">
+        <div className="flex gap-2 border-b border-zinc-200 dark:border-zinc-800 pb-1 overflow-x-auto">
+          <button
+            onClick={() => setActiveTab("anamnesis")}
+            className={`px-4 py-2 text-sm font-semibold border-b-2 transition flex items-center gap-1.5 flex-shrink-0 ${
+              activeTab === "anamnesis"
+                ? "border-emerald-600 text-emerald-600"
+                : "border-transparent text-zinc-500 hover:text-zinc-800"
+            }`}
+          >
+            <Stethoscope className="h-4 w-4 text-emerald-600" />
+            <span>Anamnese & Recordatório 24h</span>
+          </button>
           <button
             onClick={() => setActiveTab("evaluation")}
-            className={`px-4 py-2 text-sm font-semibold border-b-2 transition ${
+            className={`px-4 py-2 text-sm font-semibold border-b-2 transition flex-shrink-0 ${
               activeTab === "evaluation"
                 ? "border-emerald-600 text-emerald-600"
                 : "border-transparent text-zinc-500 hover:text-zinc-800"
             }`}
           >
-            Avaliação Física & Antropometria (Task 3.3)
+            Avaliação Física & Antropometria
           </button>
           <button
             onClick={() => setActiveTab("dietBuilder")}
-            className={`px-4 py-2 text-sm font-semibold border-b-2 transition ${
+            className={`px-4 py-2 text-sm font-semibold border-b-2 transition flex-shrink-0 ${
               activeTab === "dietBuilder"
                 ? "border-emerald-600 text-emerald-600"
                 : "border-transparent text-zinc-500 hover:text-zinc-800"
             }`}
           >
-            Construtor de Planos (Task 3.4)
+            Plano Alimentar
           </button>
           <button
             onClick={() => setActiveTab("labResults")}
-            className={`px-4 py-2 text-sm font-semibold border-b-2 transition flex items-center gap-1.5 ${
+            className={`px-4 py-2 text-sm font-semibold border-b-2 transition flex items-center gap-1.5 flex-shrink-0 ${
               activeTab === "labResults"
                 ? "border-emerald-600 text-emerald-600"
                 : "border-transparent text-zinc-500 hover:text-zinc-800"
             }`}
           >
             <BrainCircuit className="h-4 w-4 text-purple-600" />
-            <span>Exames & IA Gemini (Task 4.1)</span>
+            <span>Exames & IA Gemini</span>
           </button>
           <button
             onClick={() => setActiveTab("importLegacy")}
-            className={`px-4 py-2 text-sm font-semibold border-b-2 transition ${
+            className={`px-4 py-2 text-sm font-semibold border-b-2 transition flex-shrink-0 ${
               activeTab === "importLegacy"
                 ? "border-emerald-600 text-emerald-600"
                 : "border-transparent text-zinc-500 hover:text-zinc-800"
             }`}
           >
-            Importação Legada (Task 3.5)
+            Importação Legada
           </button>
         </div>
+
+        {activeTab === "anamnesis" && <AnamnesisTab patientId={patient.id} />}
 
         {activeTab === "evaluation" && (
           <div className="space-y-6">
